@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+let connect = {
+	baseURL: "https://integerservice.herokuapp.com/"
+}
+
 const api = axios.create({
-	baseURL: 'http://localhost:3333',
+	baseURL: connect.baseURL,
 });
 
 export default api;
