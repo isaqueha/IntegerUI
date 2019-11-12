@@ -54,6 +54,7 @@ export default function Dashboard({ history }) {
 			headers: { api_key }
 		});
 		updateIntegerValue(response.data.current);
+		checkAuthMessage(response.data.message);
 	}
 
 	async function putInteger(endpoint, api_key) {
@@ -63,6 +64,13 @@ export default function Dashboard({ history }) {
 			headers: { api_key },
 		});
 		updateIntegerValue(response.data.current);
+		checkAuthMessage(response.data.message);
+	}
+
+	function checkAuthMessage(message) {
+		if (message && message === "No Authorization") {
+			history.push('/');
+		}
 	}
 
 	function updateIntegerValue(value) {
