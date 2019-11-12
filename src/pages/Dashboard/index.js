@@ -7,45 +7,87 @@ export default function Dashboard({ history }) {
 	let [next, setNext] = useState('');
 
 	useEffect(() => {
-		async function loadIntegers() {
-			let api_key = Cookies.get('api_key');
-			if (!api_key) {
-				history.push('/');
-				return false;
-			}
+		async function loadInitialValue() {
+			let api_key = getApiKey();
 			const response = await api.get('/current', {
 				headers: { api_key }
 			});
-			setCurrent(response.data.current);
-			setNext(response.data.current + 1);
+			updateIntegerValue(response.data.current);
 		}
 
-		loadIntegers();
+		loadInitialValue();
+	}, [])
+
+	useEffect(() => {
+		async function validateAuth() {
+			let api_key = getApiKey();
+			if (!await isApiKeyValid(api_key)) {
+				history.push('/');
+				return false;
+			}
+		}
+
+		validateAuth();
 	}, [history]);
 
 	async function handleGetNext(event) {
 		event.preventDefault();
-		let api_key = Cookies.get('api_key');
-		const response = await api.get('/next', {
-			headers: { api_key }
-		});
-		setCurrent(response.data.current);
-		setNext(response.data.current + 1);
+		let api_key = getApiKey()
+		getInteger('/next', api_key);
 	}
 
 	async function handleSetCurrent(event) {
 		event.preventDefault();
-		let api_key = Cookies.get('api_key');
+		validateCurrent();
+		let api_key = getApiKey()
+		putInteger('/current', api_key);
+	}
+
+	function validateCurrent() {
 		if (current < 0) {
 			current = 0;
 		}
-		const response = await api.put('/current',
+	}
+
+	async function getInteger(endpoint, api_key) {
+		const response = await api.get(endpoint, {
+			headers: { api_key }
+		});
+		updateIntegerValue(response.data.current);
+	}
+
+	async function putInteger(endpoint, api_key) {
+		const response = await api.put(endpoint,
 		{ current },
 		{
 			headers: { api_key },
 		});
-		setCurrent(response.data.current);
-		setNext(response.data.current + 1);
+		updateIntegerValue(response.data.current);
+	}
+
+	function updateIntegerValue(value) {
+		if (value >= 0) {
+			setCurrent(value);
+			setNext(value + 1);
+		}
+	}
+
+	function getApiKey() {
+		let api_key = Cookies.get('api_key');
+		return api_key;
+	}
+
+	async function isApiKeyValid(api_key) {
+		if (!api_key) {
+			return false;
+		}
+		const response = await api.get('/current', {
+			headers: { api_key }
+		});
+		if (!response.data.current && response.data.current !== 0) {
+			return false;
+		}
+		return true;
 	}
 
 	return (
