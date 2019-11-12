@@ -124,3 +124,7 @@ body, input, button {
 .row input:disabled {
   background-color: #dee1e8;
 }
+
+.googleSign {
+  margin-bottom: 15px;
+}
