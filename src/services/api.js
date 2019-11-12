@@ -1,11 +1,8 @@
 import axios from 'axios';
-
-let connect = {
-	baseURL: "https://integerservice.herokuapp.com/"
-}
+import connection from './connection.json';
 
 const api = axios.create({
-	baseURL: connect.baseURL,
+	baseURL: connection.baseURL,
 });
 
 export default api;
