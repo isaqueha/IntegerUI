@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import api from '../../services/api';
+import Cookies from 'js-cookie';
 
 export default function Login({ history }) {
 	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
   
   async function handleSubmit(event) {
-    event.preventDefault();
-    const response = await api.post('/sessions', { email });
+		event.preventDefault();
+    const response = await api.post('/user', { email, password });
 
-    const { _id } = response.data;
-
-		localStorage.setItem('user', _id);
+		const { api_key } = response.data;
+		Cookies.set('api_key', api_key, { expires: 1 });
 		
 		history.push('/dashboard');
 	}
@@ -18,20 +19,31 @@ export default function Login({ history }) {
 	return (
 		<>
 			<p>
-				Crie sua <strong>Árvore de família</strong> de maneira fácil e rápida e <strong>guarde suas memórias</strong>.
+				Create your User to get <strong>Integer Incrementing features</strong>.
 			</p>
 
 			<form onSubmit={handleSubmit}>
 				<label htmlFor="email">E-Mail *</label>
-				<input 
+				<input
+					required
 					type="email"
 					id="email"
-					placeholder="Seu melhor e-mail"
+					placeholder="Your e-mail"
 					value={email}
 					onChange={event => setEmail(event.target.value)}
 				/>
 
-				<button className="btn" type="submit">Entrar</button>
+				<label htmlFor="password">Password *</label>
+				<input
+					required
+					type="password"
+					id="password"
+					placeholder="Your password"
+					value={password}
+					onChange={event => setPassword(event.target.value)}
+				/>
+
+				<button className="btn" type="submit">Log in</button>
 			</form>
 		</>
 
