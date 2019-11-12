@@ -6,35 +6,31 @@ import GoogleLogin from 'react-google-login';
 export default function Login({ history }) {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-  
-  async function handleSubmit(event) {
-		event.preventDefault();
-		// TODO Refactor duplicate code
-    const response = await api.post('/user', { email, password });
 
-		const { api_key } = response.data;
-		Cookies.set('api_key', api_key, { expires: 1 });
-		
-		history.push('/dashboard');
+  async function handleLogin(event) {
+		event.preventDefault();
+		await loginAndAuth(email, password);
 	}
 
 	async function onSignIn(googleUser) {
 		if (!googleUser.profileObj.googleId || !googleUser.profileObj.email) {
 			return false;
 		}
-
-		console.log(googleUser.profileObj);
-		const response = await api.post('/user', { 
-			email: googleUser.profileObj.email, 
-			password: googleUser.profileObj.googleId
-		});
-
-		const { api_key } = response.data;
-		Cookies.set('api_key', api_key, { expires: 1 });
 		
-		history.push('/dashboard');
+		await loginAndAuth(googleUser.profileObj.email, googleUser.profileObj.googleId);
 	}
 	
+	async function loginAndAuth(email, password) {
+		const response = await api.post('/user', {
+			email: email,
+			password: password
+		});
+	
+		const { api_key } = response.data;
+		Cookies.set('api_key', api_key, { expires: 1 });
+		history.push('/dashboard');
+	}
+
 	return (
 		<>
 			<p>
@@ -49,7 +45,7 @@ export default function Login({ history }) {
 				cookiePolicy={'single_host_origin'}
 			/>
 
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={handleLogin}>
 				<label htmlFor="email">E-Mail *</label>
 				<input
 					required
