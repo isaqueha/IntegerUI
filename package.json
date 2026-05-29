@@ -9,7 +9,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "axios": "^1.15.2",
+    "axios": "^1.16.0",
     "js-cookie": "^3.0.7",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
